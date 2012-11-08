@@ -1,9 +1,14 @@
 # -*- Mode: Python -*-
 
+# this won't run under the 'normal' cps transform, because
+#  it blows out the stack.  You can however convert it using the
+#  'trampoline' version.
+
 @cps_manual
 def cps_print (k, v):
     print (v)
-    k()
+    #k()
+    schedule (k)
 
 def cps_tak (x, y, z):
     if y >= x:
