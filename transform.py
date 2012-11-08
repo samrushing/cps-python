@@ -23,11 +23,19 @@ import unparse
 #   the stack when we call a continuation function?  [maybe this isn't really an issue since
 #   anything 'live' over the call will have to be an argument?]
 
+# Note: this code currently requires Python 3, because it uses the PEP 3104 'nonlocal' keyword
+#   to inform continuation functions which variables belong to the outer, 'real' function.
+#   I'm guessing this would not be necessary if the transformer output byte code instead, which
+#   should make a Python 2 version possible.  A source->source transform for Python 2 probably
+#   requires either closure conversion, or some other witchery: one possibility might be to
+#   store the outer function's locals in a list (of known name) and translate references into
+#   list refs/assigns...
+
 # TODO:
 #  * some kind of importy or decoratory magic to automatically run this at load time.
 #  * exceptions (think about exception-passing style)
+#  * 'continue': need some way of identifying the innermost loop's continuation function.
 #  * for loops
-#  * ability to trampoline
 
 import sys
 
@@ -578,26 +586,6 @@ class writer:
                 'utf-8'
                 )
             )
-
-s1 = """\
-"""
-
-s2 = """\
-@cps_manual
-def cps_print (k, v):
-    print (v)
-    k()
-def cps_tak (x, y, z):
-    if y >= x:
-        return z
-    else:
-        return cps_tak (
-            cps_tak (x-1, y, z),
-            cps_tak (y-1, z, x),
-            cps_tak (z-1, x, y)
-            )
-cps_print (cps_tak (18, 12, 6))
-"""
 
 def t0():
     exp = ast.parse (s1)
