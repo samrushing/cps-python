@@ -402,6 +402,14 @@ class transformer:
                 )
             )
 
+    # the simplest way of invoking a continuation - simply calling it
+    #   to use a trampoline/scheduler, override this method.
+    def invoke_continuation (self, name, dead=False):
+        if dead:
+            return dead_cont (lambda: Call (name, [], NullCont))
+        else:
+            return make_cont (lambda var: Call (name, [var], NullCont))
+
     def t_If (self, node, k):
         if k.exp is None:
             # tail position, no need for a continuation function
@@ -409,7 +417,7 @@ class transformer:
         else:
             name = 'kf%d' % (self.kf_counter,)
             self.kf_counter += 1
-            call_kf = dead_cont (lambda: Call (name, [], NullCont))
+            call_kf = self.invoke_continuation (name, dead=True)
             def make_if():
                 return self.t_exp (
                     node.test,
@@ -425,10 +433,7 @@ class transformer:
 
     def t_Return (self, node, k):
         # 'return' == 'feed the result to the continuation'
-        return self.t_exp (
-            node.value,
-            make_cont (lambda var: Call ('k', [var], NullCont))
-            )
+        return self.t_exp (node.value, self.invoke_continuation ('k'))
 
     def t_Attribute (self, node, k):
         return self.t_exp (node.value, make_cont (lambda var: Attribute (var, node.attr, node.ctx, k)))
@@ -536,8 +541,10 @@ class transformer:
         self.kf_counter += 1
         name1 = 'kf%d' % (self.kf_counter,)
         self.kf_counter += 1
-        call_wkf = dead_cont (lambda: Call (name0, [], NullCont))
-        call_kf = dead_cont (lambda: Call (name1, [], NullCont))
+        #call_wkf = dead_cont (lambda: Call (name0, [], NullCont))
+        call_wkf = self.invoke_continuation (name0, dead=True)
+        #call_kf = dead_cont (lambda: Call (name1, [], NullCont))
+        call_kf = self.invoke_continuation (name1, dead=True)
         def make_while():
             def make_test (tvar):
                 return If (
@@ -572,43 +579,9 @@ class writer:
                 )
             )
 
-s0 = """\
-@cps_manual
-def cps_print (k, v):
-    print (v)
-    k()
-def cps_fact (n):
-    if n == 1:
-        return 1
-    else:
-        return n * cps_fact (n-1)
-cps_print (cps_fact (5))
-"""
-
 s1 = """\
-def double (x):
-    return x * 2
-@cps_manual
-def cps_print (k, v):
-    print (v)
-    k()
-y=9
-def cps_thing():
-    x = 0
-    while x < 10:
-        if x < 3:
-            x = x + 1
-        else:
-            x = x + 2
-        cps_print (double (x))
-    else:
-        x = y
-    return x * 5
-cps_print (cps_thing())
 """
 
-# this blows out the recursion limit, but it seems to transform correctly.
-#  might make a good demo of a trampoline...
 s2 = """\
 @cps_manual
 def cps_print (k, v):
@@ -636,15 +609,19 @@ def t0():
     w = writer (sys.stdout)
     cps.emit_all (w)
 
-def dofile (path):
-    import os
-    base, ext = os.path.splitext (path)
+def transform (path, transformer=transformer):
     src = open (path).read()
     exp = ast.parse (src, path, 'exec')
     t = transformer()
     cps = t.t_exp (exp, NullCont)
     find_locals (cps, None)
     find_nonlocals (cps, None)
+    return cps
+
+def dofile (path):
+    import os
+    cps = transform (path)
+    base, ext = os.path.splitext (path)
     fout = open (base + '.cps.py', 'wb')
     w = writer (fout)
     cps.emit_all (w)
