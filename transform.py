@@ -36,6 +36,8 @@ import unparse
 #  * exceptions (think about exception-passing style)
 #  * 'continue': need some way of identifying the innermost loop's continuation function.
 #  * for loops
+#  * need an 'invoke_function' method so CPS calls can be scheduled (not just continuations, or
+#    maybe instead of continuations?)
 
 import sys
 
