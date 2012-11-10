@@ -127,7 +127,7 @@ bytecode
 A better version of this transform could probably be done utilizing bytecode output rather than source.  I think this could also target Python 2.
 
 
-_trampolining: http://en.wikipedia.org/wiki/Trampoline_(computing)
-_CPS: http://en.wikipedia.org/wiki/Continuation-passing_style
-_asyncore: http://docs.python.org/2/library/asyncore.html
-_Twisted: http://twistedmatrix.com/trac/
+.. _trampolining: http://en.wikipedia.org/wiki/Trampoline_(computing)
+.. _CPS: http://en.wikipedia.org/wiki/Continuation-passing_style
+.. _asyncore: http://docs.python.org/2/library/asyncore.html
+.. _Twisted: http://twistedmatrix.com/trac/
