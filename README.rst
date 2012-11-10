@@ -25,7 +25,7 @@ In order to interface normally with code following the protocol, it's necessary 
 protocol
 --------
 
-The CPS 'protocol' is currently very simple, aside from the required prefix in the name, a CPS function takes an extra argument (the first one), commonly called ``'k'``, which represents the rest of the computation.  Here's an example, hand-written ``cps_print()`` function::
+The CPS 'protocol' is currently very simple: aside from the required prefix in the name, a CPS function takes an extra argument (the first one), commonly called ``'k'``, which represents the rest of the computation.  Here's an example, hand-written ``cps_print()`` function::
 
     @cps_manual
     def cps_print (k, v):
@@ -39,6 +39,8 @@ A silly example of one accepting a value::
     @cps_manual
     def cps_double (k, x):
         k (x * 2)
+
+An easy way to think about this function is to consider it a replacement for the 'return' statement.
 
 Note: you don't normally provide or concern yourself with this argument, unless you are writing code that will interface with CPS'd code.
 
