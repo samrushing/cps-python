@@ -16,11 +16,11 @@ programming
 
 The transformer currently performs a source->source conversion, i.e. it takes normal python code and emits transformed python code.  When traversing a body of code, it needs to identify functions that need converting, and it needs to identify function calls that can be expected to follow the CPS calling 'protocol'.
 
-This is currently done using a 'cps_' prefix on function names.  If a call is made to a function with a name starting with 'cps_', it will be transformed into a CPS call.
+This is currently done using a ``'cps_'`` prefix on function names.  If a call is made to a function with a name starting with ``'cps_'``, it will be transformed into a CPS call.
 
-The current transformer also assumes that function *definitions* that start with 'cps_' also want to be converted.
+The current transformer also assumes that function *definitions* that start with ``'cps_'`` also want to be converted.
 
-In order to interface normally with code following the protocol, it's necessary to provide a way to define functions that obey the protocol, but do not need conversion.  This is done with a '@cps_manual' decorator, which is removed by the conversion process.
+In order to interface normally with code following the protocol, it's necessary to provide a way to define functions that obey the protocol, but do not need conversion.  This is done with a ``'@cps_manual'`` decorator, which is removed by the conversion process.
 
 the transform
 -------------
@@ -119,15 +119,25 @@ The transformer is by no means complete.  It implements a small subset of Python
 timeouts
 --------
 
-It should be possible to implement lots of nice thread-like features around this when combined with an event scheduler, including stuff like a with_timeout() function.
+It should be possible to implement lots of nice thread-like features around this when combined with an event scheduler, including stuff like a ``with_timeout()`` function.
 
 bytecode
 --------
 
 A better version of this transform could probably be done utilizing bytecode output rather than source.  I think this could also target Python 2.
 
+CPS transform in C
+------------------
+
+I wrote `some notes`_ a while ago about applying the CPS transform to C code, readers may find it helpful/interesting.
+
+
+
+
+
 
 .. _trampolining: http://en.wikipedia.org/wiki/Trampoline_(computing)
 .. _CPS: http://en.wikipedia.org/wiki/Continuation-passing_style
 .. _asyncore: http://docs.python.org/2/library/asyncore.html
 .. _Twisted: http://twistedmatrix.com/trac/
+.. _some notes: http://dark.nightmare.com/rushing/factcps/
