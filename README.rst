@@ -22,6 +22,26 @@ The current transformer also assumes that function *definitions* that start with
 
 In order to interface normally with code following the protocol, it's necessary to provide a way to define functions that obey the protocol, but do not need conversion.  This is done with a ``'@cps_manual'`` decorator, which is removed by the conversion process.
 
+protocol
+--------
+
+The CPS 'protocol' is currently very simple, aside from the required prefix in the name, a CPS function takes an extra argument (the first one), commonly called ``'k'``, which represents the rest of the computation.  Here's an example, hand-written ``cps_print()`` function::
+
+    @cps_manual
+    def cps_print (k, v):
+        print (v)
+        k()
+  
+In this case the continuation function itself takes *no* args.  This is referred to in the code as a 'dead' continuation (it does not expect to receive a value).
+
+A silly example of one accepting a value::
+
+    @cps_manual
+    def cps_double (k, x):
+        k (x * 2)
+
+Note: you don't normally provide or concern yourself with this argument, unless you are writing code that will interface with CPS'd code.
+
 the transform
 -------------
 
